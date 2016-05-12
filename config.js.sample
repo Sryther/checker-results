@@ -1,0 +1,10 @@
+module.exports = {
+  smtp: {
+      host: '',
+      port: 0,
+      auth: {
+          user: '',
+          pass: ''
+      }
+  }
+};
