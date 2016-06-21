@@ -1,0 +1,20 @@
+module.exports = {
+  smtp: {
+    host: '',
+    port: 0,
+    auth: {
+      user: '',
+      pass: ''
+    }
+  },
+  ovh: {
+    endpoint: 'ovh-eu',
+    appKey: 'YOUR_APP_KEY',
+    appSecret: 'YOUR_APP_SECRET'
+  },
+  mongodb: {
+    address: '',
+    port: 0,
+    database: ''
+  }
+};
