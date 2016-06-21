@@ -11,7 +11,7 @@ module.exports = function(config) {
     sendSms: sendSms
   };
 
-  function sendSms(receivers) {
+  function sendSms(receivers, url) {
     receivers = _.reduce(receivers, function(result, value, key) {
       result.push(value.sms);
       return result;
@@ -22,13 +22,13 @@ module.exports = function(config) {
       .then(function(serviceName) {
         console.log('Sending SMS.');
         // Send a simple SMS with a short number using your serviceName
-        return ovh.requestPromised('POST', '/sms/{serviceName}/jobs', {
-          serviceName: serviceName,
-          message: 'Les résultats de votre concours sont disponibles ! Veuillez ne pas répondre à ce sms.',
-          senderForResponse: true,
-          sender: 'Sryther',
-          receivers: receivers
-        });
+        // return ovh.requestPromised('POST', '/sms/{serviceName}/jobs', {
+        //   serviceName: serviceName,
+        //   message: 'Les résultats de votre concours sont disponibles ( ' + url + ')! Veuillez ne pas répondre à ce sms.',
+        //   senderForResponse: true,
+        //   sender: 'Sryther',
+        //   receivers: receivers
+        // });
       })
       .catch(errorHandler('Cannot send a sms'));;
   }

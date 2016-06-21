@@ -21,6 +21,8 @@ var mail = require('./src/mail')(config.smtp);
 var sms = require('./src/sms')(config.ovh);
 var locker = require('./src/locker')();
 
+var needToSend = false;
+
 request.getPage(RESULTPAGE)
   .catch(errorHandler('Cannot get page'))
   .then(searchResults.lookForResults(LOOKFOR))
@@ -30,6 +32,7 @@ request.getPage(RESULTPAGE)
   .then(function(result) {
     if (result) {
       console.log('Results found !');
+      needToSend = true;
       return Promise.resolve(ROOT + result);
     } else {
       console.log('Not found');
@@ -38,15 +41,19 @@ request.getPage(RESULTPAGE)
   })
   // .then(mail.sendMail(receivers))
   // .catch(errorHandler('Cannot send mail'))
-  .then(locker.check)
-  .catch(errorHandler('Cannot check the lock'))
-  .then(function(isLocked) {
-    if (!isLocked) {
-      locker.lock();
-      return sms.sendSms(receivers);
-    } else {
+  .then(function(url) {
+    if (url) {
+      return locker.check()
+        .then(function(isLocked) {
+          if (!isLocked && needToSend) {
+            locker.lock();
+            return sms.sendSms(receivers, url);
+          } else {
+            return Promise.resolve();
+          }
+        });
+      }
       return Promise.resolve();
-    }
   })
   .catch(errorHandler('Cannot send the sms'));
 
