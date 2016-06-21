@@ -4,8 +4,7 @@ var Promise = require('bluebird');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 var _ = require('lodash');
-
-Promise.promisifyAll(nodemailer);
+var errorHandler = require('./errorHandler');
 
 module.exports = function(config) {
   var transporter = nodemailer.createTransport(smtpTransport(config));
@@ -14,12 +13,35 @@ module.exports = function(config) {
     sendMail: sendMail
   };
 
+  function verify() {
+    return new Promise(function(resolve, reject) {
+      transporter.verify(function(err, success) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(success);
+      });
+    });
+  }
+
+  function send(opts) {
+    return new Promise(function(resolve, reject) {
+      transporter.sendMail(opts, function(err, success) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(success);
+      });
+    });
+  }
+
   /**
    * Sends an email if the results are available.
    * @param  {Object} receiver - The receiver of the mail.
    * @return {function} - Returns a function that sends mail to receivers.
    */
   function sendMail(receivers) {
+
     receivers = _.reduce(receivers, function(result, value, key) {
       result.push(value.mail);
       return result;
@@ -46,7 +68,11 @@ module.exports = function(config) {
         opts.text = url;
         opts.html = htmlUrl;
 
-        return transporter.sendMail(opts);
+        return verify()
+          .then(function() {
+            return send(opts);
+          })
+          .catch(errorHandler('Cannot verify SMTP'));
       }
     };
   }

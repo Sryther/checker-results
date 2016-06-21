@@ -5,7 +5,8 @@ module.exports = {
     auth: {
       user: '',
       pass: ''
-    }
+    },
+    debug: false
   },
   ovh: {
     endpoint: 'ovh-eu',

@@ -25,14 +25,14 @@ request.getPage(RESULTPAGE)
   .catch(errorHandler('Unable to find results'))
   .then(function(results) {
     if (results) {
-      console.log(results);
-      return Promise.resolve(ROOT + results.toString());
+      return Promise.resolve(ROOT + results.parentNode.attrs[0].value);
     } else {
       return Promise.resolve(null);
     }
   })
   .then(mail.sendMail(receivers))
-  .catch(errorHandler('Cannot send mail'));
+  .catch(errorHandler('Cannot send mail'))
+  .then(debug);
   // .then(sms.sendSms(receivers))
   // .catch(errorHandler('Cannot send the sms'));
 
