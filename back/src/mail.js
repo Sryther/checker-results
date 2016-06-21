@@ -8,7 +8,7 @@ var _ = require('lodash');
 Promise.promisifyAll(nodemailer);
 
 module.exports = function(config) {
-  var transporter = nodemailer.createTransport(smtpTransport(config.smtp));
+  var transporter = nodemailer.createTransport(smtpTransport(config));
 
   return {
     sendMail: sendMail
@@ -16,10 +16,14 @@ module.exports = function(config) {
 
   /**
    * Sends an email if the results are available.
-   * @param  {array} receivers - The receivers of the mail.
+   * @param  {Object} receiver - The receiver of the mail.
    * @return {function} - Returns a function that sends mail to receivers.
    */
   function sendMail(receivers) {
+    receivers = _.reduce(receivers, function(result, value, key) {
+      result.push(value.mail);
+      return result;
+    }, []);
 
     /**
      * @param  {Object} results - The HTML.
@@ -42,7 +46,6 @@ module.exports = function(config) {
         opts.text = url;
         opts.html = htmlUrl;
 
-        console.log('Mail is sending !');
         return transporter.sendMail(opts);
       }
     };
