@@ -20,16 +20,15 @@ module.exports = function(config) {
     return  ovh.requestPromised('GET', '/sms')
       .catch(errorHandler('Cannot get the service name'))
       .then(function(serviceName) {
-        console.log(serviceName);
+        console.log('Sending SMS.');
         // Send a simple SMS with a short number using your serviceName
-        return Promise.resolve();
-        // return ovh.requestPromised('POST', '/sms/{serviceName}/jobs', {
-        //   serviceName: serviceName,
-        //   message: 'Vos résultats de votre concours sont disponibles ! Veuillez ne pas répondre à ce sms.',
-        //   senderForResponse: true,
-        //   sender: 'Sryther',
-        //   receivers: receivers
-        // });
+        return ovh.requestPromised('POST', '/sms/{serviceName}/jobs', {
+          serviceName: serviceName,
+          message: 'Les résultats de votre concours sont disponibles ! Veuillez ne pas répondre à ce sms.',
+          senderForResponse: true,
+          sender: 'Sryther',
+          receivers: receivers
+        });
       })
       .catch(errorHandler('Cannot send a sms'));;
   }
