@@ -30,11 +30,10 @@ request.getPage(RESULTPAGE)
       return Promise.resolve(null);
     }
   })
-  .then(mail.sendMail(receivers))
-  .catch(errorHandler('Cannot send mail'))
-  .then(debug);
-  // .then(sms.sendSms(receivers))
-  // .catch(errorHandler('Cannot send the sms'));
+  // .then(mail.sendMail(receivers))
+  // .catch(errorHandler('Cannot send mail'))
+  .then(sms.sendSms(receivers))
+  .catch(errorHandler('Cannot send the sms'));
 
 /**
  * Used to debug.
